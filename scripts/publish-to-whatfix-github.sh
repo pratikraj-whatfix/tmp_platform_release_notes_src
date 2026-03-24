@@ -17,10 +17,18 @@ ensure_whatfix_gh_auth() {
   fi
   if [[ -n "${GH_WHATFIX_TOKEN:-}" ]]; then
     echo "${GH_WHATFIX_TOKEN}" | gh auth login -h github.com --with-token
+    [[ "$(gh api user -q .login)" == "${REPO_OWNER}" ]] || {
+      echo "Token is not for GitHub user ${REPO_OWNER}."
+      exit 1
+    }
     return 0
   fi
   if [[ -f "$TOKEN_FILE" ]]; then
     gh auth login -h github.com --with-token <"$TOKEN_FILE"
+    [[ "$(gh api user -q .login)" == "${REPO_OWNER}" ]] || {
+      echo "Token in ${TOKEN_FILE} is not for GitHub user ${REPO_OWNER}."
+      exit 1
+    }
     return 0
   fi
   echo "GitHub CLI is not logged in as ${REPO_OWNER}."
@@ -63,7 +71,7 @@ else
   git remote remove origin 2>/dev/null || true
   gh repo create "${FULL_REPO}" \
     --public \
-    --description "platform_release_notes ù Release Notes design revamp (Whatfix dashboard / Navi design language)" \
+    --description "platform_release_notes ? Release Notes design revamp (Whatfix dashboard / Navi design language)" \
     --add-topic release-notes \
     --add-topic design \
     --add-topic whatfix \
