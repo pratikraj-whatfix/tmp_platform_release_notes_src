@@ -12,8 +12,8 @@ cd "$ROOT"
 TOKEN_FILE="${WH_TOKEN_FILE:-${HOME}/.config/gh/pratikraj-whatfix.token}"
 
 ensure_whatfix_gh_auth() {
-  if gh auth status -h github.com 2>&1 | grep -q "Logged in to github.com account ${REPO_OWNER}"; then
-    return 0
+  if gh auth switch -u "${REPO_OWNER}" >/dev/null 2>&1; then
+    [[ "$(gh api user -q .login 2>/dev/null || true)" == "${REPO_OWNER}" ]] && return 0
   fi
   if [[ -n "${GH_WHATFIX_TOKEN:-}" ]]; then
     echo "${GH_WHATFIX_TOKEN}" | gh auth login -h github.com --with-token
@@ -63,7 +63,7 @@ else
   git remote remove origin 2>/dev/null || true
   gh repo create "${FULL_REPO}" \
     --public \
-    --description "platform_release_notes ó Release Notes design revamp (Whatfix dashboard / Navi design language)" \
+    --description "platform_release_notes ù Release Notes design revamp (Whatfix dashboard / Navi design language)" \
     --add-topic release-notes \
     --add-topic design \
     --add-topic whatfix \
