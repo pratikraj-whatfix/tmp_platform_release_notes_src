@@ -1,0 +1,46 @@
+:root {
+  /* Spacing Scale - Base unit: 4px */
+  --spacing-0: 0;
+  --spacing-2: 0.125rem;   /* 2px */
+  --spacing-4: 0.25rem;    /* 4px */
+  --spacing-8: 0.5rem;     /* 8px */
+  --spacing-12: 0.75rem;   /* 12px */
+  --spacing-16: 1rem;      /* 16px */
+  --spacing-24: 1.5rem;    /* 24px */
+  --spacing-32: 2rem;      /* 32px */
+  --spacing-40: 2.5rem;    /* 40px */
+  --spacing-48: 3rem;      /* 48px */
+  --spacing-64: 4rem;      /* 64px */
+  --spacing-72: 4.5rem;    /* 72px */
+
+  /* Border Radius */
+  --border-radius-none: 0;
+  --border-radius-small: 0.25rem;   /* 4px */
+  --border-radius-medium: 0.5rem;   /* 8px */
+  --border-radius-large: 0.75rem;   /* 12px */
+  --border-radius-full: 2.25rem;    /* 36px */
+
+  /* Border Width */
+  --border-width-none: 0;
+  --border-width-small: 1px;
+  --border-width-medium: 2px;
+  --border-width-large: 4px;
+
+  /* Elevation (Shadows) */
+  --elevation-01: 0px 2px 4px 0px rgba(0, 0, 0, 0.08);   /* Cards */
+  --elevation-02: 0px 2px 6px 0px rgba(0, 0, 0, 0.10);   /* Hover */
+  --elevation-03: 0px 4px 12px 0px rgba(0, 0, 0, 0.12);  /* Dropdowns */
+  --elevation-04: 0px 6px 20px 0px rgba(0, 0, 0, 0.14);  /* Modals */
+  --elevation-05: 0px 6px 18px 0px rgba(0, 0, 0, 0.16);  /* Sticky headers */
+  --elevation-06: 0px 6px 22px 4px rgba(0, 0, 0, 0.18);  /* Navigation */
+
+  /* Breakpoints */
+  --breakpoint-sm: 360px;    /* Margin: 1rem */
+  --breakpoint-md: 1280px;   /* Margin: 1.5rem */
+  --breakpoint-lg: 1440px;   /* Margin: 2rem */
+  --breakpoint-xl: 1920px;   /* Body: 1440px - 4rem */
+
+  /* Transitions */
+  --transition-duration: 150ms;
+  --transition-timing: ease-in-out;
+}

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Activity &amp; Audit History v2</title>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body,#root{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#1F1F32;background:#FCFCFD}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#D1D0DB;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#ABABBA}
+button{font-family:inherit}
+.app{display:flex;flex-direction:column;height:100%}
+.header{padding:24px 32px 20px;border-bottom:1px solid #ECECF3;background:#fff;display:flex;justify-content:space-between;align-items:flex-start}
+.header h1{font-size:22px;font-weight:700;letter-spacing:-0.02em;color:#1F1F32}
+.header p{margin-top:4px;font-size:13px;color:#6B697B}
+.ctrl{padding:14px 32px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #ECECF3;background:#fff;flex-wrap:wrap}
+.ctrl .spacer{flex:1}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:13px;font-weight:500;border-radius:8px;border:1px solid #DFDDE7;cursor:pointer;background:#fff;color:#525066;transition:all .15s;white-space:nowrap}
+.btn:hover{border-color:#B5B3C3}
+.btn.primary{background:#C74900;color:#fff;border-color:#C74900}
+.btn.primary:hover{background:#a53d00}
+.btn.active{background:#2B2B40;color:#fff;border-color:#2B2B40}
+.btn.ghost{border:none;background:none;padding:4px 8px;color:#8C899F}
+.btn.ghost:hover{color:#525066;background:#F4F4F8}
+.search-box{position:relative;max-width:340px;flex:1}
+.search-box input{width:100%;padding:7px 12px 7px 32px;font-size:13px;border:1px solid #DFDDE7;border-radius:8px;outline:none;background:#fff;color:#1F1F32}
+.search-box input:focus{border-color:#C74900}
+.search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#8C899F}
+.badge{display:inline-block;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:600}
+.content-area{flex:1;display:flex;overflow:hidden;min-height:0}
+.table-section{flex:1;display:flex;flex-direction:column;min-height:0;min-width:0}
+.table-scroll{flex:1;overflow:auto;min-height:0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:10px 14px;text-align:left;font-weight:600;font-size:11px;color:#525066;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;user-select:none;background:#F6F6F9;border-bottom:1px solid #ECECF3;position:sticky;top:0;z-index:2}
+th.sortable{cursor:pointer}
+th.sortable:hover{color:#1F1F32}
+td{padding:10px 14px;border-bottom:1px solid #ECECF3;vertical-align:middle}
+tr.row:hover{background:#FAFAFE}
+tr.row.selected{background:#FFF8F5}
+.trunc{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-box-orient:vertical}
+.trunc-1{-webkit-line-clamp:1}
+.trunc-2{-webkit-line-clamp:2}
+.pagination{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:10px 32px;border-top:1px solid #ECECF3;background:#fff;font-size:13px;color:#6B697B}
+.pag-btn{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid #DFDDE7;background:#fff;cursor:pointer;font-size:12px;font-weight:500;color:#525066;transition:all .12s}
+.pag-btn:hover:not(:disabled):not(.active){background:#F4F4F8}
+.pag-btn.active{background:#2B2B40;color:#fff;border-color:#2B2B40}
+.pag-btn:disabled{opacity:.35;cursor:default}
+.dropdown{position:absolute;top:calc(100% + 4px);background:#fff;border:1px solid #E8E6F0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:20;min-width:200px}
+.dropdown-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;cursor:pointer;color:#1F1F32;transition:background .1s;white-space:nowrap}
+.dropdown-item:first-child{border-radius:10px 10px 0 0}
+.dropdown-item:last-child{border-radius:0 0 10px 10px}
+.dropdown-item:hover{background:#F6F6F9}
+.dropdown-item.disabled{opacity:.4;pointer-events:none}
+.dropdown-item svg{flex-shrink:0}
+.col-toggle{padding:12px 14px}
+.col-toggle label{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer;color:#525066}
+.col-toggle label:hover{color:#1F1F32}
+.col-toggle input[type=checkbox]{accent-color:#C74900;width:15px;height:15px;cursor:pointer}
+.col-toggle .section-title{font-size:10px;font-weight:700;text-transform:uppercase;color:#8C899F;letter-spacing:.06em;margin-bottom:4px;padding-top:6px}
+.history-banner{display:flex;align-items:center;gap:12px;padding:10px 32px;background:linear-gradient(90deg,#FFF8F5,#fff);border-bottom:1px solid #FEE2D6;font-size:13px;flex-shrink:0}
+.history-banner .label{font-weight:600;color:#C74900}
+.history-banner .name{color:#1F1F32;font-weight:500}
+.panel{width:420px;flex-shrink:0;background:#fff;display:flex;flex-direction:column;overflow:hidden;border-radius:14px 0 0 14px;box-shadow:-8px 0 30px rgba(0,0,0,.08),-2px 0 8px rgba(0,0,0,.04);border-left:1px solid #E8E6F0;margin:8px 0;position:relative;z-index:5}
+.panel-header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid #ECECF3;background:linear-gradient(180deg,#FAFAFE,#fff);border-radius:14px 0 0 0}
+.panel-header h3{font-size:15px;font-weight:700;color:#1F1F32}
+.panel-content{flex:1;overflow:auto;padding:0}
+.panel-section{padding:18px 24px;border-bottom:1px solid #F2F2F8}
+.panel-section:last-child{border-bottom:none}
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#C74900;margin-bottom:14px}
+.detail-row{display:flex;gap:12px;padding:6px 0;font-size:13px}
+.detail-row .dl{min-width:110px;color:#8C899F;font-weight:500;flex-shrink:0}
+.detail-row .dv{color:#1F1F32;word-break:break-word;flex:1}
+.ct-highlight{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:6px;font-size:13px;font-weight:600;background:linear-gradient(135deg,#FFF0E8,#FFF8F5);border:1px solid #FEE2D6;color:#C74900}
+.compare-modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4)}
+.compare-body{background:#fff;border-radius:14px;width:90%;max-width:900px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.compare-header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid #ECECF3}
+.compare-header h3{font-size:16px;font-weight:700}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;flex:1;overflow:auto}
+.compare-col{padding:20px 24px;border-right:1px solid #ECECF3}
+.compare-col:last-child{border-right:none}
+.compare-col h4{font-size:13px;font-weight:700;color:#C74900;margin-bottom:12px}
+.version-badge{display:inline-block;padding:3px 10px;font-size:12px;font-weight:500;background:#F0F9FF;color:#0D59AB;border:1px solid #BFDBFE;border-radius:6px;white-space:nowrap}
+.link{color:#0975D7;text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+.link:hover{text-decoration:underline}
+@media(max-width:768px){.panel{width:100%;position:absolute;right:0;top:0;bottom:0;border-radius:0}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef,useMemo,useCallback}=React;
+
+/* ═══ ICONS ═══════════════════════════════════════════════════════════════ */
+const Ico={
+  Search:()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>,
+  Filter:()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>,
+  Columns:()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/></svg>,
+  Download:()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>,
+  Dots:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>,
+  X:()=><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>,
+  Eye:()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
+  History:()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>,
+  Compare:()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>,
+  ExtLink:()=><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>,
+  ChevL:()=><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m15 18-6-6 6-6"/></svg>,
+  ChevR:()=><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m9 18 6-6-6-6"/></svg>,
+  ChevUp:()=><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m18 15-6-6-6 6"/></svg>,
+  ChevDn:()=><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="m6 9 6 6 6-6"/></svg>,
+  Sel:()=><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{opacity:.35}}><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg>,
+  ArrowLeft:()=><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m12 19-7-7 7-7M19 12H5"/></svg>,
+};
+
+/* ═══ CONSTANTS ═══════════════════════════════════════════════════════════ */
+const ROWS_PER_PAGE=20;
+const CAT={
+  Content:{label:'Content',color:'#0D6E3F',bg:'#ECFDF5'},
+  Configuration:{label:'Config',color:'#7C3AED',bg:'#F3EEFF'},
+  Access:{label:'Access',color:'#C74900',bg:'#FFF8F5'},
+  Other:{label:'Other',color:'#525066',bg:'#F4F4F8'},
+};
+const CONTENT_TYPES=['Flow','Beacon','Smart Tip','Task List','Launcher','Pop-up'];
+const USERS=[
+  {name:'Pratik Raj',email:'pratik.raj@whatfix.com'},
+  {name:'Madhav Sridhar',email:'madhav.sridhar@whatfix.com'},
+  {name:'Sarah Chen',email:'sarah.chen@whatfix.com'},
+  {name:'Alex Kumar',email:'alex.kumar@whatfix.com'},
+  {name:'Jinal Shah',email:'jinal.shah@whatfix.com'},
+];
+const COLUMNS=[
+  {id:'event',label:'Event',required:true,width:'18%'},
+  {id:'userInfo',label:'User Info',width:'14%'},
+  {id:'action',label:'Performed Action',width:'22%'},
+  {id:'contentType',label:'Content Type',width:'10%'},
+  {id:'reqId',label:'Business Req ID',width:'10%'},
+  {id:'timestamp',label:'Timestamp',width:'14%'},
+  {id:'version',label:'Version',width:'6%'},
+  {id:'actions',label:'Actions',required:true,width:'6%',align:'center'},
+];
+
+/* ═══ MOCK DATA ═══════════════════════════════════════════════════════════ */
+function genData(){
+  const evts=[];let id=1;const now=Date.now();
+  const ts=(d,h=0)=>{const t=new Date(now-d*864e5-h*36e5);return{epoch:t.getTime(),d:t}};
+  const jira=()=>`https://jira.whatfix.com/browse/OPS-${1000+Math.floor(Math.random()*9000)}`;
+  const names=['Onboarding Flow','Feature Walkthrough','Checkout Guide','Dashboard Beacon',
+    'Settings Helper','Search Tutorial','User Profile Tip','Navigation Launcher',
+    'FAQ Task List','Welcome Pop-up','Release Notes','Help Widget','Survey Form'];
+  names.forEach((n,i)=>{
+    const ct=CONTENT_TYPES[i%CONTENT_TYPES.length];
+    const u=USERS[i%USERS.length];
+    const vers=1+Math.floor(Math.random()*4);
+    const gid=`g-c-${i}`;
+    for(let v=1;v<=vers;v++){
+      const da=28-i*2-(vers-v)*3;
+      evts.push({id:`e${id++}`,_gid:gid,_v:v,_tv:vers,
+        cat:'Content',chgType:v===1?'Created':'Updated',
+        actor:{...u,role:'Editor'},
+        obj:{name:n,type:'Content',ct,id:`o-${i}`},
+        at:ts(Math.max(1,da),i+v),
+        act:v===1?`${u.name} created '${n}'`:`${u.name} updated '${n}' to v${v}`,
+        title:v===1?`'${n}' created`:`'${n}' updated`,
+        ip:`192.168.${(i*17+v*3)%256}.${(i*7+v*11)%256}`,
+        jira:jira(),
+        raw:{Message:`${v===1?'Created':'Updated'} content '${n}' v${v}`,Ent:'whatfix-demo',Src:'Content Manager'},
+      });
+    }
+  });
+  for(let i=0;i<12;i++){const u=USERS[i%5];
+    evts.push({id:`e${id++}`,_gid:`g-a-${i}`,_v:1,_tv:1,
+      cat:'Access',chgType:'Login',actor:{...u,role:'Admin'},
+      obj:{name:'Session',type:'Session',ct:null,id:`s-${i}`},
+      at:ts(i*3+1,i*2),act:`${u.name} signed in`,title:'Session logged in',
+      ip:`10.0.${(i*13)%256}.${(i*29)%256}`,jira:jira(),
+      raw:{Message:`User '${u.email}' logged in`,Ent:'whatfix-demo',Src:'Auth Service'},
+    });
+  }
+  ['SSO settings updated','API token regenerated','Deployment config changed',
+   'Theme customization updated','Webhook added','Role permissions updated',
+   'Branding updated','Email template changed'].forEach((a,i)=>{const u=USERS[i%5];
+    evts.push({id:`e${id++}`,_gid:`g-cf-${i}`,_v:1,_tv:1,
+      cat:'Configuration',chgType:'Updated',actor:{...u,role:'Admin'},
+      obj:{name:a.split(' ')[0],type:'Setting',ct:null,id:`c-${i}`},
+      at:ts(i*4+2,i*3),act:`${u.name} ${a.toLowerCase()}`,title:a,
+      ip:`172.16.${(i*19)%256}.${(i*31)%256}`,jira:jira(),
+      raw:{Message:a,Ent:'whatfix-demo',Src:'Settings'},
+    });
+  });
+  for(let i=0;i<10;i++){const u=USERS[i%5];
+    evts.push({id:`e${id++}`,_gid:`g-o-${i}`,_v:1,_tv:1,
+      cat:'Other',chgType:'Downloaded',actor:{...u,role:'Admin'},
+      obj:{name:'Audit Logs',type:'Audit logs',ct:null,id:null},
+      at:ts(i*3+1,i),act:`${u.name} downloaded audit logs`,title:"'Audit Logs' downloaded",
+      ip:`10.1.${(i*23)%256}.${(i*37)%256}`,jira:jira(),
+      raw:{Message:`User '${u.email}' downloaded audit logs.`,Ent:'whatfix-demo',Src:'Audit Service'},
+    });
+  }
+  evts.sort((a,b)=>b.at.epoch-a.at.epoch);
+  return evts;
+}
+
+/* ═══ UTILS ═══════════════════════════════════════════════════════════════ */
+function fmtTime(at){
+  const d=at.d;
+  return d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})+
+    ', '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+function relTime(epoch){
+  const s=Math.floor((Date.now()-epoch)/1000);
+  if(s<60)return 'just now';if(s<3600)return `${Math.floor(s/60)}m ago`;
+  if(s<86400)return `${Math.floor(s/3600)}h ago`;
+  const d=Math.floor(s/86400);if(d<7)return `${d}d ago`;
+  if(d<30)return `${Math.floor(d/7)}w ago`;return `${Math.floor(d/30)}mo ago`;
+}
+function exportCSV(rows){
+  const h=['Event','Category','User','Action','Content Type','Timestamp','Version'];
+  const csv=[h.join(','),...rows.map(r=>[
+    `"${r.title}"`,r.cat,`"${r.actor.name}"`,`"${r.act}"`,r.obj.ct||'—',
+    `"${fmtTime(r.at)}"`,`v${r._v}`
+  ].join(','))].join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='audit-log.csv';a.click();
+}
+
+/* ═══ SMALL COMPONENTS ════════════════════════════════════════════════════ */
+function CatBadge({cat}){
+  const c=CAT[cat]||CAT.Other;
+  return <span className="badge" style={{color:c.color,background:c.bg}}>{c.label}</span>;
+}
+function Trunc({text,lines=1,style={}}){
+  return <div className={`trunc trunc-${lines}`} style={style} title={text}>{text}</div>;
+}
+function PagBtn({children,active,disabled,onClick}){
+  return <button className={`pag-btn${active?' active':''}`} disabled={disabled} onClick={onClick}>{children}</button>;
+}
+
+/* ═══ COLUMN VISIBILITY DROPDOWN ═════════════════════════════════════════ */
+function ColToggle({visible,onChange}){
+  const [open,setOpen]=useState(false);
+  const ref=useRef(null);
+  useEffect(()=>{if(!open)return;const h=e=>{if(ref.current&&!ref.current.contains(e.target))setOpen(false)};
+    document.addEventListener('mousedown',h);return()=>document.removeEventListener('mousedown',h)},[open]);
+  return(
+    <div ref={ref} style={{position:'relative'}}>
+      <button className="btn" onClick={()=>setOpen(!open)} style={open?{background:'#FFF8F5',color:'#C74900',borderColor:'#FEE2D6'}:{}}>
+        <Ico.Columns/>Columns
+      </button>
+      {open&&<div className="dropdown" style={{right:0}}>
+        <div className="col-toggle">
+          <div className="section-title">Toggle Columns</div>
+          {COLUMNS.filter(c=>!c.required).map(c=>(
+            <label key={c.id}>
+              <input type="checkbox" checked={visible.has(c.id)}
+                onChange={()=>{const s=new Set(visible);s.has(c.id)?s.delete(c.id):s.add(c.id);onChange(s)}}/>
+              {c.label}
+            </label>
+          ))}
+        </div>
+      </div>}
+    </div>
+  );
+}
+
+/* ═══ ACTION MENU ════════════════════════════════════════════════════════ */
+function ActionMenu({ev,onDetail,onHistory,onCompare}){
+  const [open,setOpen]=useState(false);
+  const ref=useRef(null);
+  const btnRef=useRef(null);
+  const dropRef=useRef(null);
+  const [pos,setPos]=useState({top:0,right:0});
+  const multi=ev._tv>1;
+  useEffect(()=>{if(!open)return;const h=e=>{
+    if(ref.current&&ref.current.contains(e.target))return;
+    if(dropRef.current&&dropRef.current.contains(e.target))return;
+    setOpen(false)};
+    document.addEventListener('mousedown',h);return()=>document.removeEventListener('mousedown',h)},[open]);
+  const handleOpen=()=>{
+    if(btnRef.current){const r=btnRef.current.getBoundingClientRect();
+      const spaceBelow=window.innerHeight-r.bottom;
+      if(spaceBelow<140)setPos({bottom:window.innerHeight-r.top+4,right:window.innerWidth-r.right,top:'auto'});
+      else setPos({top:r.bottom+4,right:window.innerWidth-r.right,bottom:'auto'});
+    }
+    setOpen(!open);
+  };
+  return(
+    <div ref={ref} style={{position:'relative',display:'inline-block'}}>
+      <button ref={btnRef} className="btn ghost" onClick={handleOpen}><Ico.Dots/></button>
+      {open&&ReactDOM.createPortal(
+        <div ref={dropRef} className="dropdown" style={{position:'fixed',top:pos.top,bottom:pos.bottom,right:pos.right,minWidth:180,zIndex:50}}>
+          <div className="dropdown-item" onClick={()=>{setOpen(false);onDetail(ev.id)}}>
+            <Ico.Eye/> More Details
+          </div>
+          <div className={`dropdown-item${multi?'':' disabled'}`}
+            onClick={()=>{if(multi){setOpen(false);onHistory(ev._gid,ev.obj.name||ev.title)}}}>
+            <Ico.History/> View History{!multi&&<span style={{fontSize:11,color:'#ABABBA',marginLeft:'auto'}}>single</span>}
+          </div>
+          <div className={`dropdown-item${multi?'':' disabled'}`}
+            onClick={()=>{if(multi){setOpen(false);onCompare(ev._gid)}}}>
+            <Ico.Compare/> Compare Versions{!multi&&<span style={{fontSize:11,color:'#ABABBA',marginLeft:'auto'}}>single</span>}
+          </div>
+        </div>,document.body
+      )}
+    </div>
+  );
+}
+
+/* ═══ EVENT ROW ══════════════════════════════════════════════════════════ */
+function EventRow({ev,selected,visible,onDetail,onHistory,onCompare}){
+  const cat=CAT[ev.cat]||CAT.Other;
+  const show=id=>visible.has(id);
+  return(
+    <tr className={`row${selected?' selected':''}`}>
+      {show('event')&&<td>
+        <Trunc text={ev.title} style={{fontWeight:500,color:'#1F1F32',fontSize:13,marginBottom:3}}/>
+        <CatBadge cat={ev.cat}/>
+      </td>}
+      {show('userInfo')&&<td>
+        <div style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}} title={ev.actor.name}>{ev.actor.name}</div>
+        <div style={{fontSize:12,color:'#8C899F',marginTop:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}} title={ev.actor.email}>{ev.actor.email}</div>
+      </td>}
+      {show('action')&&<td style={{color:'#525066'}}>
+        <Trunc text={ev.act} lines={2} style={{fontSize:13}}/>
+      </td>}
+      {show('contentType')&&<td>
+        {ev.obj.ct
+          ?<span style={{display:'inline-block',padding:'3px 10px',borderRadius:6,fontSize:12,fontWeight:600,background:'#FFF0E8',color:'#C74900',border:'1px solid #FEE2D6'}}>{ev.obj.ct}</span>
+          :<span style={{color:'#D1D0DB'}}>—</span>}
+      </td>}
+      {show('reqId')&&<td>
+        <a href={ev.jira} target="_blank" rel="noopener noreferrer" className="link" style={{fontSize:13}}>
+          Link <Ico.ExtLink/>
+        </a>
+      </td>}
+      {show('timestamp')&&<td>
+        <div style={{fontWeight:500,fontSize:13,whiteSpace:'nowrap'}}>{fmtTime(ev.at)}</div>
+        <div style={{fontSize:11,color:'#8C899F',marginTop:1}}>{relTime(ev.at.epoch)}</div>
+      </td>}
+      {show('version')&&<td>
+        {ev._tv>1
+          ?<span className="version-badge">v{ev._v}</span>
+          :<span style={{color:'#D1D0DB',fontSize:12}}>—</span>}
+      </td>}
+      {show('actions')&&<td style={{textAlign:'center',overflow:'visible'}}>
+        <ActionMenu ev={ev} onDetail={onDetail} onHistory={onHistory} onCompare={onCompare}/>
+      </td>}
+    </tr>
+  );
+}
+
+/* ═══ DETAIL PANEL ═══════════════════════════════════════════════════════ */
+function DetailPanel({event:ev,onClose}){
+  if(!ev)return null;
+  const cat=CAT[ev.cat]||CAT.Other;
+  const isContent=ev.cat==='Content';
+  return(
+    <div className="panel">
+      <div className="panel-header">
+        <h3>Event Details</h3>
+        <button className="btn ghost" onClick={onClose}><Ico.X/></button>
+      </div>
+      <div className="panel-content">
+        <div className="panel-section">
+          <div className="section-label">Standard Details</div>
+          <div className="detail-row"><div className="dl">Event</div><div className="dv" style={{fontWeight:500}}>{ev.title}</div></div>
+          <div className="detail-row"><div className="dl">Category</div><div className="dv"><CatBadge cat={ev.cat}/></div></div>
+          {isContent&&<div className="detail-row">
+            <div className="dl">Content Type</div>
+            <div className="dv"><span className="ct-highlight">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+              {ev.obj.ct}
+            </span></div>
+          </div>}
+          <div className="detail-row"><div className="dl">Change Type</div><div className="dv">{ev.chgType}</div></div>
+          <div className="detail-row"><div className="dl">User</div><div className="dv">
+            <div style={{fontWeight:600}}>{ev.actor.name}</div>
+            <div style={{fontSize:12,color:'#8C899F',marginTop:2}}>{ev.actor.email}</div>
+          </div></div>
+          {ev.actor.role&&<div className="detail-row"><div className="dl">Role</div><div className="dv">{ev.actor.role}</div></div>}
+          <div className="detail-row"><div className="dl">Action</div><div className="dv">{ev.act}</div></div>
+          <div className="detail-row"><div className="dl">Timestamp</div><div className="dv">{fmtTime(ev.at)}</div></div>
+          <div className="detail-row"><div className="dl">Business Req ID</div><div className="dv">
+            <a href={ev.jira} target="_blank" rel="noopener noreferrer" className="link">Link <Ico.ExtLink/></a>
+          </div></div>
+          {ev._tv>1&&<div className="detail-row"><div className="dl">Version</div><div className="dv"><span className="version-badge">v{ev._v} of {ev._tv}</span></div></div>}
+        </div>
+        <div className="panel-section">
+          <div className="section-label">Additional Details</div>
+          {ev.ip&&<div className="detail-row"><div className="dl">IP Address</div><div className="dv" style={{fontFamily:'monospace',fontSize:12}}>{ev.ip}</div></div>}
+          {ev.obj.id&&<div className="detail-row"><div className="dl">Object ID</div><div className="dv" style={{fontFamily:'monospace',fontSize:12}}>{ev.obj.id}</div></div>}
+          <div className="detail-row"><div className="dl">Object Type</div><div className="dv">{ev.obj.type}</div></div>
+          <div className="detail-row"><div className="dl">Enterprise</div><div className="dv">{ev.raw.Ent}</div></div>
+          {ev.raw.Src&&<div className="detail-row"><div className="dl">Source</div><div className="dv">{ev.raw.Src}</div></div>}
+          <div className="detail-row"><div className="dl">Raw Message</div><div className="dv">
+            <div style={{fontSize:12,color:'#6B697B',background:'#F6F6F9',padding:'8px 12px',borderRadius:6,fontFamily:'monospace',lineHeight:1.5,wordBreak:'break-all'}}>{ev.raw.Message}</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══ COMPARE MODAL ══════════════════════════════════════════════════════ */
+function CompareModal({allEvents,groupId,onClose}){
+  if(!groupId)return null;
+  const versions=allEvents.filter(e=>e._gid===groupId).sort((a,b)=>a._v-b._v);
+  const [leftIdx,setLeftIdx]=useState(Math.max(0,versions.length-2));
+  const [rightIdx,setRightIdx]=useState(versions.length-1);
+  const left=versions[leftIdx],right=versions[rightIdx];
+  if(!left||!right)return null;
+  const fields=[
+    ['Event',e=>e.title],['Change Type',e=>e.chgType],['User',e=>e.actor.name],
+    ['Action',e=>e.act],['Timestamp',e=>fmtTime(e.at)],
+    ...(left.obj.ct?[['Content Type',e=>e.obj.ct]]:[]),
+    ['Raw Message',e=>e.raw.Message],
+  ];
+  return(
+    <div className="compare-modal" onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
+      <div className="compare-body">
+        <div className="compare-header">
+          <h3>Compare Versions — {left.obj.name||left.title}</h3>
+          <button className="btn ghost" onClick={onClose}><Ico.X/></button>
+        </div>
+        <div style={{display:'flex',gap:0,padding:'12px 24px',borderBottom:'1px solid #ECECF3',background:'#FAFAFE'}}>
+          <div style={{flex:1}}>
+            <select value={leftIdx} onChange={e=>setLeftIdx(+e.target.value)}
+              style={{padding:'6px 10px',border:'1px solid #DFDDE7',borderRadius:6,fontSize:13,background:'#fff'}}>
+              {versions.map((v,i)=><option key={v.id} value={i}>Version {v._v}{i===versions.length-1?' (Latest)':''}</option>)}
+            </select>
+          </div>
+          <div style={{flex:1}}>
+            <select value={rightIdx} onChange={e=>setRightIdx(+e.target.value)}
+              style={{padding:'6px 10px',border:'1px solid #DFDDE7',borderRadius:6,fontSize:13,background:'#fff'}}>
+              {versions.map((v,i)=><option key={v.id} value={i}>Version {v._v}{i===versions.length-1?' (Latest)':''}</option>)}
+            </select>
+          </div>
+        </div>
+        <div className="compare-grid">
+          <div className="compare-col">
+            <h4>Version {left._v}</h4>
+            {fields.map(([label,fn])=>{
+              const val=fn(left),diff=fn(left)!==fn(right);
+              return <div key={label} className="detail-row" style={diff?{background:'#FFF8F5',margin:'0 -24px',padding:'6px 24px',borderRadius:4}:{}}>
+                <div className="dl">{label}</div><div className="dv" style={diff?{fontWeight:600,color:'#C74900'}:{}}>{val}</div>
+              </div>;
+            })}
+          </div>
+          <div className="compare-col">
+            <h4>Version {right._v}</h4>
+            {fields.map(([label,fn])=>{
+              const val=fn(right),diff=fn(left)!==fn(right);
+              return <div key={label} className="detail-row" style={diff?{background:'#ECFDF5',margin:'0 -24px',padding:'6px 24px',borderRadius:4}:{}}>
+                <div className="dl">{label}</div><div className="dv" style={diff?{fontWeight:600,color:'#0D6E3F'}:{}}>{val}</div>
+              </div>;
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══ MAIN APP ═══════════════════════════════════════════════════════════ */
+function App(){
+  const [allEvents]=useState(genData);
+  const [search,setSearch]=useState('');
+  const [catFilter,setCatFilter]=useState('all');
+  const [sortKey,setSortKey]=useState('time');
+  const [sortDir,setSortDir]=useState('desc');
+  const [page,setPage]=useState(1);
+  const [selectedId,setSelectedId]=useState(null);
+  const [visible,setVisible]=useState(()=>new Set(COLUMNS.map(c=>c.id)));
+  const [histGid,setHistGid]=useState(null);
+  const [histName,setHistName]=useState('');
+  const [compareGid,setCompareGid]=useState(null);
+
+  const latestOnly=useMemo(()=>{
+    const m=new Map();
+    allEvents.forEach(e=>{const ex=m.get(e._gid);if(!ex||e._v>ex._v)m.set(e._gid,e)});
+    return [...m.values()];
+  },[allEvents]);
+
+  const filtered=useMemo(()=>{
+    let r=histGid?allEvents.filter(e=>e._gid===histGid):latestOnly;
+    if(catFilter!=='all')r=r.filter(e=>e.cat===catFilter);
+    if(search){const s=search.toLowerCase();r=r.filter(e=>e.title.toLowerCase().includes(s)||e.actor.name.toLowerCase().includes(s)||e.act.toLowerCase().includes(s))}
+    return r;
+  },[allEvents,latestOnly,histGid,catFilter,search]);
+
+  const sorted=useMemo(()=>{
+    const arr=[...filtered];
+    if(histGid)return arr.sort((a,b)=>b._v-a._v);
+    const dir=sortDir==='asc'?1:-1;
+    arr.sort((a,b)=>{
+      if(sortKey==='event')return dir*a.title.localeCompare(b.title);
+      if(sortKey==='actor')return dir*a.actor.name.localeCompare(b.actor.name);
+      return dir*(a.at.epoch-b.at.epoch);
+    });
+    return arr;
+  },[filtered,sortKey,sortDir,histGid]);
+
+  const totalPages=Math.ceil(sorted.length/ROWS_PER_PAGE);
+  const pageEvents=sorted.slice((page-1)*ROWS_PER_PAGE,page*ROWS_PER_PAGE);
+  const selectedEvent=allEvents.find(e=>e.id===selectedId)||null;
+
+  const toggleSort=k=>{if(sortKey===k)setSortDir(d=>d==='asc'?'desc':'asc');else{setSortKey(k);setSortDir('desc')}};
+  const openDetail=id=>{setSelectedId(id)};
+  const openHistory=(gid,name)=>{
+    const ev=allEvents.find(e=>e._gid===gid);
+    setHistGid(gid);setHistName(name);setPage(1);
+    if(ev)setCatFilter(ev.cat);
+  };
+  const exitHistory=()=>{setHistGid(null);setHistName('');setCatFilter('all');setPage(1)};
+
+  useEffect(()=>{setPage(1)},[search,catFilter,histGid]);
+
+  const visCols=COLUMNS.filter(c=>visible.has(c.id));
+
+  return(
+    <div className="app">
+      {/* HEADER */}
+      <div className="header">
+        <div>
+          <h1>System Activity &amp; Audit History</h1>
+          <p>Review changes across content, configuration, and access</p>
+        </div>
+        <button className="btn primary" onClick={()=>exportCSV(sorted)}>
+          <Ico.Download/> Export CSV
+        </button>
+      </div>
+
+      {/* CONTROL BAR */}
+      <div className="ctrl">
+        {['all','Content','Configuration','Access','Other'].map(c=>(
+          <button key={c} className={`btn${catFilter===c?' active':''}`} onClick={()=>setCatFilter(c)} style={{fontSize:12,padding:'6px 12px'}}>
+            {c==='all'?'All':CAT[c]?.label||c}
+          </button>
+        ))}
+        <div className="search-box">
+          <Ico.Search/>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search events, users, actions..."/>
+        </div>
+        <ColToggle visible={visible} onChange={setVisible}/>
+        <div className="spacer"/>
+        <span style={{fontSize:13,color:'#6B697B'}}>{sorted.length} event{sorted.length!==1?'s':''}</span>
+      </div>
+
+      {/* HISTORY BANNER */}
+      {histGid&&<div className="history-banner">
+        <button className="btn" onClick={exitHistory} style={{padding:'5px 10px',fontSize:12}}><Ico.ArrowLeft/> Back</button>
+        <span className="label">Viewing history for:</span>
+        <span className="name">"{histName}"</span>
+        <span style={{color:'#8C899F',fontSize:12}}>({sorted.length} version{sorted.length!==1?'s':''})</span>
+      </div>}
+
+      {/* CONTENT */}
+      <div className="content-area">
+        <div className="table-section">
+          {sorted.length===0?(
+            <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:12,color:'#8C899F'}}>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+              <p style={{fontSize:15,fontWeight:500,color:'#525066'}}>No events found</p>
+              <p style={{fontSize:13}}>Try adjusting your filters or search term.</p>
+            </div>
+          ):(
+            <>
+              <div className="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      {visCols.map(c=>{
+                        const sortable=['event','userInfo','timestamp'].includes(c.id);
+                        const sk=c.id==='event'?'event':c.id==='userInfo'?'actor':c.id==='timestamp'?'time':null;
+                        const active=sk&&sortKey===sk;
+                        return <th key={c.id} className={sortable?'sortable':''} style={{width:c.width,textAlign:c.align||'left'}}
+                          onClick={sortable?()=>toggleSort(sk):undefined}>
+                          <span style={{display:'inline-flex',alignItems:'center',gap:3}}>
+                            {c.label}
+                            {sortable&&(active?(sortDir==='asc'?<Ico.ChevUp/>:<Ico.ChevDn/>):<Ico.Sel/>)}
+                          </span>
+                        </th>;
+                      })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pageEvents.map(ev=>(
+                      <EventRow key={ev.id} ev={ev} selected={ev.id===selectedId}
+                        visible={visible} onDetail={openDetail} onHistory={openHistory} onCompare={setCompareGid}/>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="pagination">
+                <span>Showing {(page-1)*ROWS_PER_PAGE+1}–{Math.min(page*ROWS_PER_PAGE,sorted.length)} of {sorted.length}</span>
+                <div style={{display:'flex',gap:4}}>
+                  <PagBtn disabled={page<=1} onClick={()=>setPage(p=>p-1)}><Ico.ChevL/></PagBtn>
+                  {Array.from({length:Math.min(totalPages,7)},(_,i)=>{
+                    const n=totalPages<=7?i+1:page<=4?i+1:page>=totalPages-3?totalPages-6+i:page-3+i;
+                    return <PagBtn key={n} active={n===page} onClick={()=>setPage(n)}>{n}</PagBtn>;
+                  })}
+                  <PagBtn disabled={page>=totalPages} onClick={()=>setPage(p=>p+1)}><Ico.ChevR/></PagBtn>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* DETAIL PANEL */}
+        {selectedEvent&&<DetailPanel event={selectedEvent} onClose={()=>setSelectedId(null)}/>}
+      </div>
+
+      {/* COMPARE MODAL */}
+      <CompareModal allEvents={allEvents} groupId={compareGid} onClose={()=>setCompareGid(null)}/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

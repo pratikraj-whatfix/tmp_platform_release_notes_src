@@ -1,0 +1,102 @@
+:root {
+  /* Primitives */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  /* Primary - Whatfix Fire */
+  --color-primary-50: #FFF8F5;
+  --color-primary-100: #FEE2D6;
+  --color-primary-200: #F58857;
+  --color-primary-300: #E45913;
+  --color-primary-400: #C74900;  /* Main CTA */
+  --color-primary-500: #9E4100;
+  --color-primary-600: #873B00;
+
+  /* Secondary - Inkredible */
+  --color-secondary-0: #FCFCFD;    /* Product background */
+  --color-secondary-50: #F6F6F9;
+  --color-secondary-100: #F2F2F8;
+  --color-secondary-200: #ECECF3;
+  --color-secondary-300: #DFDDE7;
+  --color-secondary-400: #8C899F;
+  --color-secondary-500: #7B7891;
+  --color-secondary-600: #6B697B;
+  --color-secondary-700: #525066;
+  --color-secondary-800: #3D3C52;
+  --color-secondary-900: #2B2B40;
+  --color-secondary-1000: #1F1F32; /* Nav background */
+
+  /* Success - SuccesSage */
+  --color-success-50: #F1FEF9;
+  --color-success-100: #D9FBEE;
+  --color-success-200: #6CEABA;
+  --color-success-300: #24DB92;
+  --color-success-400: #21AD73;
+  --color-success-500: #198558;
+  --color-success-600: #106A40;
+  --color-success-700: #0C5532;
+
+  /* Info - Knowledgablue */
+  --color-info-50: #F0F9FF;
+  --color-info-100: #D7EFFE;
+  --color-info-200: #7EC7FC;
+  --color-info-300: #2E9EFA;
+  --color-info-400: #0975D7;
+  --color-info-500: #0D59AB;
+  --color-info-600: #033D84;
+
+  /* Warning - Yell-uh-oh */
+  --color-warning-50: #FEFBEB;
+  --color-warning-100: #FEF7D6;
+  --color-warning-200: #F6D860;
+  --color-warning-300: #F4B31A;
+  --color-warning-400: #E0A400;
+  --color-warning-500: #AD7900;
+  --color-warning-600: #976C07;
+  --color-warning-700: #724F04;
+
+  /* Critical - Scare-let */
+  --color-critical-50: #FFF0F3;
+  --color-critical-100: #FED6DD;
+  --color-critical-200: #F6566B;
+  --color-critical-300: #E31429;
+  --color-critical-400: #B3141D;
+  --color-critical-500: #8E1014;
+  --color-critical-600: #750A0A;
+
+  /* Brand - Crimson */
+  --color-crimson-100: #FAF0F0;
+  --color-crimson-200: #FCD4D6;
+  --color-crimson-300: #FAB2B7;
+  --color-crimson-400: #F68487;
+  --color-crimson-500: #F05663;
+  --color-crimson-600: #872345;
+  --color-crimson-700: #5D182D;
+
+  /* Brand - Bright Blue */
+  --color-brightblue-100: #C8E3FA;
+  --color-brightblue-200: #F2F8FD;
+  --color-brightblue-300: #E1EEFA;
+  --color-brightblue-400: #B6D1F0;
+  --color-brightblue-500: #7AB0E2;
+  --color-brightblue-600: #287ACC;
+  --color-brightblue-700: #1D5FA5;
+
+  /* Brand - Orange */
+  --color-orange-100: #FFE9DC;
+  --color-orange-200: #FFC89C;
+  --color-orange-300: #FFA450;
+  --color-orange-400: #FF6B18;
+  --color-orange-500: #F55800;
+  --color-orange-600: #8F2B00;
+  --color-orange-700: #5C1800;
+
+  /* Brand - Human Shades (Illustrations) */
+  --color-human-100: #FCD5C5;
+  --color-human-200: #FAC1AA;
+  --color-human-300: #DB9C77;
+  --color-human-400: #BF7357;
+  --color-human-500: #824E3B;
+  --color-human-600: #572F20;
+  --color-human-700: #2E170F;
+}

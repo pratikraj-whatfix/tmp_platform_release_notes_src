@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Font Family */
+  --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Font Sizes */
+  --font-size-12: 0.75rem;
+  --font-size-14: 0.875rem;
+  --font-size-16: 1rem;
+  --font-size-18: 1.125rem;
+  --font-size-20: 1.25rem;
+  --font-size-22: 1.375rem;
+  --font-size-24: 1.5rem;
+  --font-size-26: 1.625rem;
+  --font-size-30: 1.875rem;
+  --font-size-34: 2.125rem;
+
+  /* Line Heights */
+  --line-height-16: 1rem;
+  --line-height-20: 1.25rem;
+  --line-height-22: 1.375rem;
+  --line-height-24: 1.5rem;
+  --line-height-26: 1.625rem;
+  --line-height-28: 1.75rem;
+  --line-height-30: 1.875rem;
+  --line-height-32: 2rem;
+  --line-height-34: 2.125rem;
+  --line-height-38: 2.375rem;
+  --line-height-42: 2.625rem;
+}
+
+/* Typography Utility Classes */
+.text-heading-01 {
+  font-size: var(--font-size-34);
+  line-height: var(--line-height-42);
+  font-weight: var(--font-weight-bold);
+}
+
+.text-heading-02 {
+  font-size: var(--font-size-30);
+  line-height: var(--line-height-38);
+  font-weight: var(--font-weight-bold);
+}
+
+.text-heading-03 {
+  font-size: var(--font-size-26);
+  line-height: var(--line-height-34);
+  font-weight: var(--font-weight-bold);
+}
+
+.text-heading-04 {
+  font-size: var(--font-size-24);
+  line-height: var(--line-height-32);
+  font-weight: var(--font-weight-bold);
+}
+
+.text-heading-05 {
+  font-size: var(--font-size-22);
+  line-height: var(--line-height-30);
+  font-weight: var(--font-weight-bold);
+}
+
+.text-subheading-01 {
+  font-size: var(--font-size-24);
+  line-height: var(--line-height-32);
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-subheading-02 {
+  font-size: var(--font-size-22);
+  line-height: var(--line-height-30);
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-subheading-03 {
+  font-size: var(--font-size-20);
+  line-height: var(--line-height-28);
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-subheading-04 {
+  font-size: var(--font-size-18);
+  line-height: var(--line-height-26);
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-subheading-05 {
+  font-size: var(--font-size-16);
+  line-height: var(--line-height-24);
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-subheading-06 {
+  font-size: var(--font-size-14);
+  line-height: var(--line-height-20);
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-bodytext-01 {
+  font-size: var(--font-size-18);
+  line-height: var(--line-height-28);
+  font-weight: var(--font-weight-regular);
+}
+
+.text-bodytext-02 {
+  font-size: var(--font-size-16);
+  line-height: var(--line-height-24);
+  font-weight: var(--font-weight-regular);
+}
+
+.text-bodytext-03 {
+  font-size: var(--font-size-14);
+  line-height: var(--line-height-20);
+  font-weight: var(--font-weight-regular);
+}
+
+.text-bodytext-04 {
+  font-size: var(--font-size-12);
+  line-height: var(--line-height-16);
+  font-weight: var(--font-weight-regular);
+}
+
+.text-label-large {
+  font-size: var(--font-size-16);
+  line-height: var(--line-height-24);
+  font-weight: var(--font-weight-medium);
+}
+
+.text-label-medium {
+  font-size: var(--font-size-14);
+  line-height: var(--line-height-20);
+  font-weight: var(--font-weight-medium);
+}
+
+.text-label-small {
+  font-size: var(--font-size-12);
+  line-height: var(--line-height-16);
+  font-weight: var(--font-weight-medium);
+}
