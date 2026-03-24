@@ -2,6 +2,8 @@
 
 **Repository (Whatfix GitHub):** [`pratikraj-whatfix/platform_release_notes`](https://github.com/pratikraj-whatfix/platform_release_notes)
 
+**Transfer in progress:** This project is being moved from the Cursor-linked `gh` account to **`pratikraj-whatfix`**. Until you accept, GitHub shows the code here: [`pratikraj-git/tmp_platform_release_notes_src`](https://github.com/pratikraj-git/tmp_platform_release_notes_src). Sign in as **`pratikraj-whatfix`**, open [Notifications](https://github.com/notifications) (or the transfer email), and **accept** the transfer; the repo will then appear as `pratikraj-whatfix/platform_release_notes`. After acceptance, run: `git remote set-url origin https://github.com/pratikraj-whatfix/platform_release_notes.git`
+
 Design exploration for a Release Notes revamp, reusing the Whatfix dashboard boilerplate (Navi design system: layout, tokens, components).
 
 This project is a React + TypeScript + Tailwind CSS codebase for Whatfix-style product dashboards—button styles, sidebar, modals, page layouts, design tokens, and component patterns.
